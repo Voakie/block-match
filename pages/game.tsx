@@ -71,14 +71,14 @@ export default function Game() {
         return <div>Connect with your Mobile Device: {ownId}</div>
     }
 
-    const [x, y, z] = controllerOrientation
+    const [a, b, g] = controllerOrientation
 
     return (
         <div className="h-screen">
             <div className="fixed">
-                <div>X: {x}</div>
-                <div>Y: {y}</div>
-                <div>Z: {z}</div>
+                <div>Alpha: {a}</div>
+                <div>Beta: {b}</div>
+                <div>Gamma: {g}</div>
             </div>
             <Canvas>
                 <ControllerContext.Provider value={{ orientation: controllerOrientation }}>

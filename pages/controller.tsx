@@ -12,8 +12,6 @@ interface ControllerState {
 }
 
 export default class Controller extends Component<{}, ControllerState> {
-    gyroscope?: Gyroscope
-
     constructor(props: {}) {
         super(props)
 
@@ -27,31 +25,16 @@ export default class Controller extends Component<{}, ControllerState> {
             connection: undefined
         }
 
-        this.togglePause = this.togglePause.bind(this)
-        this.gyroscopeReading = this.gyroscopeReading.bind(this)
+        this.onDeviceOrientation = this.onDeviceOrientation.bind(this)
         this.onPeerIdChange = this.onPeerIdChange.bind(this)
         this.onConnectClick = this.onConnectClick.bind(this)
     }
 
-    togglePause() {
-        if (this.state.paused) {
-            this.gyroscope?.start()
-        } else {
-            this.gyroscope?.stop()
-        }
+    onDeviceOrientation(ev: DeviceOrientationEvent) {
+        if (this.state.paused) return
+        if (ev.alpha === null || ev.beta === null || ev.gamma === null) return
 
-        this.setState({ paused: !this.state.paused })
-    }
-
-    gyroscopeReading() {
-        if (this.state.paused || !this.gyroscope) return
-
-        const [x, y, z] = this.state.orientation
-        const orientation = [
-            this.gyroscope.x ? x + this.gyroscope.x : x,
-            this.gyroscope.y ? x + this.gyroscope.y : y,
-            this.gyroscope.z ? x + this.gyroscope.z : z
-        ]
+        const orientation = [ev.alpha, ev.beta, ev.gamma]
 
         this.setState({ orientation })
 
@@ -61,19 +44,11 @@ export default class Controller extends Component<{}, ControllerState> {
     }
 
     componentDidMount() {
-        if (!("Gyroscope" in window) || window.Gyroscope === undefined) {
-            this.setState({ deviceSupported: false })
-            return
-        }
-
-        this.gyroscope = new Gyroscope({ frequency: 30 })
-        this.gyroscope.start()
-        this.gyroscope.addEventListener("reading", this.gyroscopeReading)
+        addEventListener("deviceorientation", this.onDeviceOrientation)
     }
 
     componentWillUnmount() {
-        this.gyroscope?.stop()
-        this.gyroscope?.removeEventListener("reading", this.gyroscopeReading)
+        removeEventListener("deviceorientation", this.onDeviceOrientation)
     }
 
     onPeerIdChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -141,14 +116,14 @@ export default class Controller extends Component<{}, ControllerState> {
 
         if (this.state.connecting) return <div>Connecting...</div>
 
-        const [x, y, z] = this.state.orientation
+        const [a, b, g] = this.state.orientation
 
         return (
             <div>
-                {/* Current orientation: {`X: ${x} Y: ${y} Z: ${z}`}{" "} */}
-                <button className="p-5 bg-slate-200" onClick={this.togglePause}>
-                    {this.state.paused ? "Continue" : "Pause"}
-                </button>
+                Controllering...
+                <div>Alpha: {a}</div>
+                <div>Beta: {b}</div>
+                <div>Gamma: {g}</div>
             </div>
         )
     }
