@@ -19,8 +19,8 @@ export default function StartingScreenDemo() {
     const top = useRef<Mesh>(null!)
     const bottom = useRef<Mesh>(null!)
     useFrame((_, delta) => {
-        top.current.rotateY(delta / 2)
-        top.current.position.y = (Math.sin(Date.now() / 900) + 1.5) * 2
+        top.current.rotateY(delta / 10)
+        top.current.position.y = (Math.sin(Date.now() / 2000) + 1.5) * 2
         bottom.current.rotation.copy(top.current.rotation)
     })
 
