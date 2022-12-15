@@ -89,7 +89,7 @@ export default function Game() {
         } else if (level.name === "Start" && controllerConnected && peer.current) {
             setLevel(levels.getNextLevel(level)!)
         }
-    }, [controllerConnected, level.name])
+    }, [controllerConnected, level])
 
     const startingScreen = useCallback(() => {
         if (controllerConnected) return <></>

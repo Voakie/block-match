@@ -18,6 +18,7 @@ export default function BlockMatchPuzzle(props: { setLevelComplete: (c: boolean)
         gamma += radToDeg(gameStateContext.level.rotation?.x || 0)
 
         alpha %= 360
+        if (alpha < 0) alpha = 360 + alpha
         beta %= 180
         gamma %= 90
 
