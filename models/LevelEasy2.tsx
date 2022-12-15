@@ -6,11 +6,13 @@ import React from "react"
 import { useGLTF } from "@react-three/drei"
 import { GenericLevelModel, LevelModelProps } from "./GenericLevelModel"
 import { GameLevel } from "../components/GameState"
+import { Euler } from "three"
 
-export default function createEasyLevel2(): GameLevel {
+export default function createLevelEasy2(): GameLevel {
     return {
         name: "Easy 2",
-        model: LevelEasy2Model
+        model: LevelEasy2Model,
+        rotation: new Euler(0, Math.PI, 0, "XYZ")
     }
 }
 

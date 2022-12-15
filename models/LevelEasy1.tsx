@@ -7,7 +7,7 @@ import { useGLTF } from "@react-three/drei"
 import { GenericLevelModel, LevelModelProps } from "./GenericLevelModel"
 import { GameLevel } from "../components/GameState"
 
-export default function createEasyLevel1(): GameLevel {
+export default function createLevelEasy1(): GameLevel {
     return {
         name: "Easy 1",
         model: LevelEasy1Model,
@@ -16,7 +16,7 @@ export default function createEasyLevel1(): GameLevel {
 }
 
 function LevelEasy1Model(props: LevelModelProps) {
-    return <GenericLevelModel {...props} modelPath="/Easy1_.gltf" />
+    return <GenericLevelModel {...props} modelPath="/Easy1.gltf" />
 }
 
-useGLTF.preload("/Easy1_.gltf")
+useGLTF.preload("/Easy1.gltf")

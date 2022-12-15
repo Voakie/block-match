@@ -1,11 +1,18 @@
-import { GameLevel } from "../components/GameState";
-import createEasyLevel1 from "./LevelEasy1";
-import createEasyLevel2 from "./LevelEasy2";
-import createMediumLevel1 from "./LevelMedium1";
-import createStartingScreenLevel from "./StartingScreenLevel";
+import { GameLevel } from "../components/GameState"
+import createLevelEasy1 from "./LevelEasy1"
+import createLevelEasy2 from "./LevelEasy2"
+import createLevelMedium1 from "./LevelMedium1"
+import createLevelMedium2 from "./LeveMedium2"
+import createStartingScreenLevel from "./StartingScreenLevel"
 
 class Levels {
-    levels = [createStartingScreenLevel(), createEasyLevel1(), createEasyLevel2(), createMediumLevel1()]
+    levels = [
+        createStartingScreenLevel(),
+        createLevelEasy1(),
+        createLevelEasy2(),
+        createLevelMedium1(),
+        createLevelMedium2(),
+    ]
 
     getStartingLevel() {
         return this.levels[0]

@@ -33,7 +33,7 @@ function StartingScreenLevelModel() {
         bottom.current.rotation.copy(top.current.rotation)
     })
 
-    const { nodes, materials } = useGLTF("/Easy1_.gltf") as unknown as GLTFResult
+    const { nodes, materials } = useGLTF("/Easy1.gltf") as unknown as GLTFResult
     return (
         <group dispose={null} position={[0, 1, -10]}>
             <mesh

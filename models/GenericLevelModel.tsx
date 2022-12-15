@@ -44,7 +44,9 @@ export function GenericLevelModel(props: GenericLevelModelProps) {
         const [alpha, beta, gamma] = controllerContext.orientation
 
         if (!gameStateContext.levelComplete) {
-            bottom.current.setRotationFromEuler(new THREE.Euler(0, 0, 0, "XYZ"))
+            const distraction = gameStateContext.level.rotation
+            
+            bottom.current.setRotationFromEuler(distraction || new THREE.Euler(0, 0, 0, "XYZ"))
             bottom.current.rotateY(degToRad(alpha))
             bottom.current.rotateZ(degToRad(beta))
             bottom.current.rotateX(degToRad(gamma))
@@ -52,7 +54,11 @@ export function GenericLevelModel(props: GenericLevelModelProps) {
             top.current.position.set(0, 6, 2)
             top.current.rotation.set(0, Math.PI / 2, 0)
         }
-    }, [controllerContext.orientation, gameStateContext.levelComplete])
+    }, [
+        controllerContext.orientation,
+        gameStateContext.levelComplete,
+        gameStateContext.level.rotation
+    ])
 
     useFrame((_, delta) => {
         if (gameStateContext.levelComplete && top.current.position.y > 1) {

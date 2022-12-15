@@ -7,7 +7,7 @@ import { useGLTF } from "@react-three/drei"
 import { GenericLevelModel, LevelModelProps } from "./GenericLevelModel"
 import { GameLevel } from "../components/GameState"
 
-export default function createMediumLevel1(): GameLevel {
+export default function createLevelMedium1(): GameLevel {
     return {
         name: "Medium 1",
         model: LevelMedium1Model

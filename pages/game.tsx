@@ -6,7 +6,7 @@ import BlockMatchPuzzle from "../components/BlockMatchPuzzle"
 import { ControllerContext } from "../components/ControllerContext"
 import StartingScreen from "../components/game/StartingScreen"
 import { GameLevel, GameStateContext } from "../components/GameState"
-import createEasyLevel1 from "../models/LevelEasy1"
+import createLevelEasy1 from "../models/LevelEasy1"
 import { levels } from "../models/Levels"
 import createStartingScreenLevel from "../models/StartingScreenLevel"
 
@@ -87,7 +87,7 @@ export default function Game() {
                 })
             })
         } else if (level.name === "Start" && controllerConnected && peer.current) {
-            setLevel(createEasyLevel1())
+            setLevel(levels.getNextLevel(level)!)
         }
     }, [controllerConnected, level.name])
 
