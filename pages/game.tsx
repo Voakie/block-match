@@ -107,7 +107,7 @@ export default function Game() {
                         level complete
                     </div>
                     <div
-                        className="flex justify-end items-center flex-col col-start-1"
+                        className="flex justify-end items-center flex-col col-start-1 z-20"
                         style={{ gridRow: "1" }}
                     >
                         <button

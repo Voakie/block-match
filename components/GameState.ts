@@ -1,5 +1,5 @@
 import { createContext } from "react"
-import { LevelModelProps } from "../models/BlockMatchModel"
+import { LevelModelProps } from "../models/GenericLevelModel"
 import createStartingScreenLevel from "../models/StartingScreenLevel"
 
 export interface GameLevel {
