@@ -10,6 +10,7 @@ import { Mesh } from "three"
 import { ControllerContext } from "../components/ControllerContext"
 import { degToRad } from "three/src/math/MathUtils"
 import { useFrame } from "@react-three/fiber"
+import { GameStateContext } from "../components/GameState"
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -22,28 +23,27 @@ type GLTFResult = GLTF & {
     }
 }
 
-interface GenericBlockMatchModelProps extends BlockMatchModelProps {
+interface GenericLevelModelProps extends LevelModelProps {
     modelPath: string
 }
 
-export interface BlockMatchModelProps {
-    frontBackSymmetric?: boolean
-    complete: boolean
-
+export interface LevelModelProps {
     group?: JSX.IntrinsicElements["group"]
     bottom?: JSX.IntrinsicElements["mesh"]
     top?: JSX.IntrinsicElements["mesh"]
 }
 
-export function BlockMatchModel(props: GenericBlockMatchModelProps) {
+export function GenericLevelModel(props: GenericLevelModelProps) {
     const top = useRef<Mesh>(null!)
     const bottom = useRef<Mesh>(null!)
+
     const controllerContext = useContext(ControllerContext)
+    const gameStateContext = useContext(GameStateContext)
 
     useEffect(() => {
         const [alpha, beta, gamma] = controllerContext.orientation
 
-        if (!props.complete) {
+        if (!gameStateContext.levelComplete) {
             bottom.current.setRotationFromEuler(new THREE.Euler(0, 0, 0, "XYZ"))
             bottom.current.rotateY(degToRad(alpha))
             bottom.current.rotateZ(degToRad(beta))
@@ -52,14 +52,14 @@ export function BlockMatchModel(props: GenericBlockMatchModelProps) {
             top.current.position.set(0, 6, 2)
             top.current.rotation.set(0, Math.PI / 2, 0)
         }
-    }, [controllerContext.orientation, props.complete])
+    }, [controllerContext.orientation, gameStateContext.levelComplete])
 
     useFrame((_, delta) => {
-        if (props.complete && top.current.position.y > 1) {
+        if (gameStateContext.levelComplete && top.current.position.y > 1) {
             const factor = (Math.abs(6.1 - top.current.position.y) / 5.2) * Math.PI
             top.current.position.y -= 8 * Math.sin(factor) * delta
         }
-        if (props.complete && top.current.position.y <= 1) {
+        if (gameStateContext.levelComplete && top.current.position.y <= 1) {
             top.current.rotateY(delta / 2)
             bottom.current.rotation.copy(top.current.rotation)
         }

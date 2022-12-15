@@ -3,6 +3,7 @@ import { useFrame } from "@react-three/fiber"
 import { useRef } from "react"
 import { Mesh } from "three"
 import { GLTF } from "three-stdlib"
+import { GameLevel } from "../components/GameState"
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -15,7 +16,15 @@ type GLTFResult = GLTF & {
     }
 }
 
-export default function StartingScreenDemo() {
+export default function createStartingScreenLevel(): GameLevel {
+    return {
+        name: "Start",
+        model: StartingScreenLevelModel,
+        frontBackSymmetric: true
+    }
+}
+
+function StartingScreenLevelModel() {
     const top = useRef<Mesh>(null!)
     const bottom = useRef<Mesh>(null!)
     useFrame((_, delta) => {

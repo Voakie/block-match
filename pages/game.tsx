@@ -1,11 +1,14 @@
 import { Canvas } from "@react-three/fiber"
 import type Peer from "peerjs"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Color } from "three"
 import BlockMatchPuzzle from "../components/BlockMatchPuzzle"
 import { ControllerContext } from "../components/ControllerContext"
-import { Easy1 } from "../models/Easy1"
-import StartingScreenDemo from "../models/StartingScreenDemo"
+import StartingScreen from "../components/game/StartingScreen"
+import { GameLevel, GameStateContext } from "../components/GameState"
+import createEasyLevel1 from "../models/LevelEasy1"
+import { levels } from "../models/Levels"
+import createStartingScreenLevel from "../models/StartingScreenLevel"
 
 function makeid(length: number) {
     var result = ""
@@ -23,7 +26,18 @@ export default function Game() {
     const [ownId, setOwnId] = useState<string>()
     const [host, setHost] = useState<string>()
 
+    const [level, setLevel] = useState(levels.getStartingLevel())
+    const [levelComplete, setLevelComplete] = useState(false)
+
     const peer = useRef<Peer>()
+
+    const setLevelCompleteCallback = useCallback((v: boolean) => {
+        setLevelComplete(v)
+    }, [])
+
+    const setLevelCallback = useCallback((l: GameLevel) => {
+        setLevel(l)
+    }, [])
 
     useEffect(() => {
         setHost(location.host)
@@ -72,59 +86,74 @@ export default function Game() {
                     peer.current = undefined
                 })
             })
+        } else if (level.name === "Start" && controllerConnected && peer.current) {
+            setLevel(createEasyLevel1())
         }
-    }, [controllerConnected])
+    }, [controllerConnected, level.name])
 
-    if (!controllerConnected) {
-        return (
-            <div className="h-screen grid grid-cols-1">
-                <div
-                    className="col-start-1 text-[min(10vw,10vh)] text-center -z-10"
-                    style={{ gridRow: "1" }}
-                >
-                    block-match
-                </div>
+    const startingScreen = useCallback(() => {
+        if (controllerConnected) return <></>
+        return <StartingScreen host={host} ownId={ownId} />
+    }, [host, ownId, controllerConnected])
 
-                <div
-                    className="col-start-1 top-0 flex flex-col justify-end items-center z-10"
-                    style={{ gridRow: "1" }}
-                >
-                    <div className="bg-stone-200 text-stone-700 shadow-2xl p-8 rounded-xl text-xl text-center mb-20">
-                        Use your smartphone as a controller
-                        <div className="font-bold text-2xl">{host}/controller</div>
-                        and enter code
-                        <div className="font-bold text-4xl">{ownId || "..."}</div>
+    const levelSelector = useCallback(() => {
+        if (levelComplete && controllerConnected) {
+            return (
+                <>
+                    <div
+                        className="col-start-1 text-[min(10vw,10vh)] text-center"
+                        style={{ gridRow: "1" }}
+                    >
+                        level complete
                     </div>
-                </div>
+                    <div
+                        className="flex justify-end items-center flex-col col-start-1"
+                        style={{ gridRow: "1" }}
+                    >
+                        <button
+                            className="mb-[80px] p-8 shadow-2xl rounded-2xl text-2xl text-stone-700 bg-stone-300"
+                            onClick={() => {
+                                const nextLevel = levels.getNextLevel(level)
+                                if (nextLevel) {
+                                    setLevel(nextLevel)
+                                } else {
+                                    alert(
+                                        "Congratulations! You have completed the game. There are no more levels"
+                                    )
+                                }
+                            }}
+                        >
+                            Click here to start the next level
+                        </button>
+                    </div>
+                </>
+            )
+        } else return <></>
+    }, [levelComplete, level, controllerConnected])
 
-                <Canvas className="col-start-1 z-0" style={{ gridRow: "1" }}>
-                    <scene>
-                        <ambientLight />
-                        <pointLight position={[-8, 0, 0]} />
-                        <StartingScreenDemo />
-                    </scene>
-                </Canvas>
-            </div>
-        )
-    }
-
-    const [a, b, g] = controllerOrientation
+    // const [a, b, g] = controllerOrientation
 
     return (
-        <div className="h-screen bg-stone-200">
+        <div className="h-screen grid grid-cols-1">
             {/* <div className="fixed">
                 <div>Alpha: {a}</div>
                 <div>Beta: {b}</div>
                 <div>Gamma: {g}</div>
             </div> */}
-            <Canvas>
-                <ControllerContext.Provider value={{ orientation: controllerOrientation }}>
-                    <scene>
-                        <ambientLight />
-                        <pointLight position={[-8, 0, 0]} />
 
-                        <BlockMatchPuzzle puzzle={Easy1} />
-                    </scene>
+            {startingScreen()}
+            {levelSelector()}
+
+            <Canvas className="col-start-1 z-10" style={{ gridRow: "1" }}>
+                <ControllerContext.Provider value={{ orientation: controllerOrientation }}>
+                    <GameStateContext.Provider value={{ level, levelComplete }}>
+                        <scene>
+                            <ambientLight />
+                            <pointLight position={[-8, 0, 0]} />
+
+                            <BlockMatchPuzzle setLevelComplete={setLevelCompleteCallback} />
+                        </scene>
+                    </GameStateContext.Provider>
                 </ControllerContext.Provider>
             </Canvas>
         </div>
