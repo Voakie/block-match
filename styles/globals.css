@@ -10,3 +10,69 @@ html, body, #__next {
 a {
     @apply text-blue-600 underline;
 }
+
+#blockSpinner {
+    animation: blockSpinnerSvgAnimation 3s infinite;
+    width: 100px;
+    height: 100px;
+    overflow: visible;
+}
+
+#topSpinner {
+    animation: blockSpinnerTopAnimation 3s infinite;
+}
+
+#bottomSpinner {
+    animation: blockSpinnerBottomAnimation 3s infinite;
+}
+
+@keyframes blockSpinnerSvgAnimation {
+    30% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(180deg);
+    }
+    80% {
+        transform: rotate(180deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes blockSpinnerTopAnimation {
+    0% {
+        transform: translateY(0px);
+    }
+    30% {
+        transform: translateY(-15px);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+    80% {
+        transform: translateY(0px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+@keyframes blockSpinnerBottomAnimation {
+    0% {
+        transform: translateY(0px);
+    }
+    30% {
+        transform: translateY(15px);
+    }
+    50% {
+        transform: translateY(15px);
+    }
+    80% {
+        transform: translateY(0px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}

@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Head from "next/head"
 import type { DataConnection } from "peerjs"
 import React, { Component } from "react"
 import Center from "../components/controller/Center"
@@ -151,7 +151,13 @@ export default class Controller extends Component<{}, ControllerState> {
 
         return (
             <Center>
-                <div className="text-3xl font-semibold pb-5">Move this device to control the bottom block</div>
+                <Head>
+                    <title>block-match {"//"} Controller</title>
+                </Head>
+
+                <div className="text-3xl font-semibold pb-5">
+                    Move this device to control the bottom block
+                </div>
                 <div className="text-2xl pb-5">Make both blocks align to solve the puzzle</div>
                 <div>Alpha: {a}</div>
                 <div>Beta: {b}</div>

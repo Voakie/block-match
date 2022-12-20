@@ -1,14 +1,12 @@
 import { Canvas } from "@react-three/fiber"
+import Head from "next/head"
 import type Peer from "peerjs"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Color } from "three"
 import BlockMatchPuzzle from "../components/BlockMatchPuzzle"
 import { ControllerContext } from "../components/ControllerContext"
 import StartingScreen from "../components/game/StartingScreen"
 import { GameLevel, GameStateContext } from "../components/GameState"
-import createLevelEasy1 from "../models/LevelEasy1"
 import { levels } from "../models/Levels"
-import createStartingScreenLevel from "../models/StartingScreenLevel"
 
 function makeid(length: number) {
     var result = ""
@@ -143,6 +141,10 @@ export default function Game() {
 
             {startingScreen()}
             {levelSelector()}
+
+            <Head>
+                <title>block-match {"//"} Game</title>
+            </Head>
 
             <Canvas className="col-start-1 z-10" style={{ gridRow: "1" }}>
                 <ControllerContext.Provider value={{ orientation: controllerOrientation }}>

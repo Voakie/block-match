@@ -45,7 +45,7 @@ export function GenericLevelModel(props: GenericLevelModelProps) {
 
         if (!gameStateContext.levelComplete) {
             const distraction = gameStateContext.level.rotation
-            
+
             bottom.current.setRotationFromEuler(distraction || new THREE.Euler(0, 0, 0, "XYZ"))
             bottom.current.rotateY(degToRad(alpha))
             bottom.current.rotateZ(degToRad(beta))
