@@ -31,6 +31,7 @@ export default class Controller extends Component<{}, ControllerState> {
 
         this.onDeviceOrientation = this.onDeviceOrientation.bind(this)
         this.onPeerIdChange = this.onPeerIdChange.bind(this)
+        this.onPeerIdKeyboardEvent = this.onPeerIdKeyboardEvent.bind(this)
         this.onConnectClick = this.onConnectClick.bind(this)
     }
 
@@ -58,6 +59,12 @@ export default class Controller extends Component<{}, ControllerState> {
 
     onPeerIdChange(e: React.ChangeEvent<HTMLInputElement>) {
         this.setState({ peerId: e.target.value.toUpperCase() })
+    }
+
+    onPeerIdKeyboardEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+        if (e.key === "Enter") {
+            this.onConnectClick()
+        }
     }
 
     async onConnectClick() {
@@ -129,6 +136,7 @@ export default class Controller extends Component<{}, ControllerState> {
                         type="text"
                         value={this.state.peerId}
                         onChange={this.onPeerIdChange}
+                        onKeyDown={this.onPeerIdKeyboardEvent}
                     />
                     <button
                         className="p-5 bg-stone-500 text-stone-100 font-semibold rounded-xl text-2xl"

@@ -38,7 +38,9 @@ export default function Game() {
     }, [])
 
     useEffect(() => {
-        setHost(location.host)
+        const path = location.pathname.split("/")
+        path.pop()
+        setHost(location.host + path.join("/"))
     }, [])
 
     useEffect(() => {
