@@ -167,9 +167,9 @@ export default class Controller extends Component<{}, ControllerState> {
                     Move this device to control the bottom block
                 </div>
                 <div className="text-2xl pb-5">Make both blocks align to solve the puzzle</div>
-                <div>Alpha: {a}</div>
+                {/* <div>Alpha: {a}</div>
                 <div>Beta: {b}</div>
-                <div>Gamma: {g}</div>
+                <div>Gamma: {g}</div> */}
             </Center>
         )
     }
