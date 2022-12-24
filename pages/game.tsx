@@ -1,6 +1,7 @@
 import { Canvas } from "@react-three/fiber"
 import Head from "next/head"
 import type Peer from "peerjs"
+import { DataConnection } from "peerjs"
 import { useCallback, useEffect, useRef, useState } from "react"
 import BlockMatchPuzzle from "../components/BlockMatchPuzzle"
 import { ControllerContext } from "../components/ControllerContext"
@@ -28,14 +29,19 @@ export default function Game() {
     const [levelComplete, setLevelComplete] = useState(false)
 
     const peer = useRef<Peer>()
+    const controller = useRef<DataConnection>()
 
-    const setLevelCompleteCallback = useCallback((v: boolean) => {
-        setLevelComplete(v)
-    }, [])
-
-    const setLevelCallback = useCallback((l: GameLevel) => {
-        setLevel(l)
-    }, [])
+    const setLevelCompleteCallback = useCallback(
+        (v: boolean) => {
+            if (v != levelComplete) {
+                setLevelComplete(v)
+                if (controller.current) {
+                    controller.current.send({ type: "levelStatus", complete: v })
+                }
+            }
+        },
+        [levelComplete]
+    )
 
     useEffect(() => {
         const path = location.pathname.split("/")
@@ -59,17 +65,23 @@ export default function Game() {
                 peer.current.on("connection", (conn) => {
                     console.log("someone connected")
                     setControllerConnected(true)
+                    controller.current = conn
 
                     conn.on("data", (data: any) => {
                         if ("type" in data && data.type === "orientation") {
                             if ("data" in data && Array.isArray(data.data)) {
                                 setControllerOrientation(data.data)
                             }
+                        } else if ("type" in data && data.type === "action") {
+                            if ("action" in data && data.action === "nextLevel") {
+                                nextLevel()
+                            }
                         }
                     })
 
                     conn.on("close", () => {
                         setControllerConnected(false)
+                        controller.current = undefined
                     })
 
                     conn.on("error", (e) => {
@@ -96,6 +108,15 @@ export default function Game() {
         return <StartingScreen host={host} ownId={ownId} />
     }, [host, ownId, controllerConnected])
 
+    const nextLevel = useCallback(() => {
+        const nextLevel = levels.getNextLevel(level)
+        if (nextLevel) {
+            setLevel(nextLevel)
+        } else {
+            alert("Congratulations! You have completed the game. There are no more levels")
+        }
+    }, [level])
+
     const levelSelector = useCallback(() => {
         if (levelComplete && controllerConnected) {
             return (
@@ -112,16 +133,7 @@ export default function Game() {
                     >
                         <button
                             className="mb-[80px] p-8 shadow-2xl rounded-2xl text-2xl text-stone-700 bg-stone-300"
-                            onClick={() => {
-                                const nextLevel = levels.getNextLevel(level)
-                                if (nextLevel) {
-                                    setLevel(nextLevel)
-                                } else {
-                                    alert(
-                                        "Congratulations! You have completed the game. There are no more levels"
-                                    )
-                                }
-                            }}
+                            onClick={nextLevel}
                         >
                             Click here to start the next level
                         </button>

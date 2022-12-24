@@ -43,7 +43,7 @@ export default function BlockMatchPuzzle(props: { setLevelComplete: (c: boolean)
     useEffect(() => {
         setLevelComplete(false)
         setWinReachableTime(undefined)
-    }, [gameStateContext.level, setLevelComplete])
+    }, [gameStateContext.level])
 
     return <gameStateContext.level.model top={{ onClick: () => props.setLevelComplete(false) }} />
 }

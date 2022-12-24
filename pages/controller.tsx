@@ -12,6 +12,7 @@ interface ControllerState {
     connect: boolean
     connecting: boolean
     connection?: DataConnection
+    levelComplete: boolean
 }
 
 export default class Controller extends Component<{}, ControllerState> {
@@ -27,13 +28,15 @@ export default class Controller extends Component<{}, ControllerState> {
             peerId: "",
             connect: false,
             connecting: false,
-            connection: undefined
+            connection: undefined,
+            levelComplete: false
         }
 
         this.onDeviceOrientation = this.onDeviceOrientation.bind(this)
         this.onPeerIdChange = this.onPeerIdChange.bind(this)
         this.onPeerIdKeyboardEvent = this.onPeerIdKeyboardEvent.bind(this)
         this.onConnectClick = this.onConnectClick.bind(this)
+        this.onNextLevelClick = this.onNextLevelClick.bind(this)
     }
 
     onDeviceOrientation(ev: DeviceOrientationEvent) {
@@ -68,6 +71,12 @@ export default class Controller extends Component<{}, ControllerState> {
         }
     }
 
+    onNextLevelClick() {
+        if (this.state.connection && this.state.connection.open) {
+            this.state.connection.send({ type: "action", action: "nextLevel" })
+        }
+    }
+
     async onConnectClick() {
         this.setState({ connecting: true, connect: true })
 
@@ -93,6 +102,14 @@ export default class Controller extends Component<{}, ControllerState> {
                 }
             })
 
+            conn.on("data", (data: any) => {
+                if ("type" in data && data.type === "levelStatus") {
+                    if ("complete" in data && typeof data.complete === "boolean") {
+                        this.setState({ levelComplete: data.complete })
+                    }
+                }
+            })
+
             conn.on("error", (e) => {
                 alert(e)
                 conn.close()
@@ -111,7 +128,7 @@ export default class Controller extends Component<{}, ControllerState> {
             alert("Unable to connect to the game client. Please try again.")
             peer.destroy()
             this.setState({ connect: false, connecting: false, connection: undefined })
-        }, 10000)
+        }, 5000)
     }
 
     render() {
@@ -144,7 +161,9 @@ export default class Controller extends Component<{}, ControllerState> {
                     >
                         Connect
                     </button>
-                    <div className="mt-10 opacity-70">Are you trying to host a game? <Link href="./game">Click here</Link></div>
+                    <div className="mt-10 opacity-70">
+                        Are you trying to host a game? <Link href="./game">Click here</Link>
+                    </div>
                 </Center>
             )
         }
@@ -168,6 +187,16 @@ export default class Controller extends Component<{}, ControllerState> {
                     Move this device to control the bottom block
                 </div>
                 <div className="text-2xl pb-5">Make both blocks align to solve the puzzle</div>
+                {this.state.levelComplete ? (
+                    <button
+                        className="p-5 bg-stone-500 text-stone-100 font-semibold rounded-xl text-2xl"
+                        onClick={this.onNextLevelClick}
+                    >
+                        Click here to start the next level
+                    </button>
+                ) : (
+                    <></>
+                )}
                 {/* <div>Alpha: {a}</div>
                 <div>Beta: {b}</div>
                 <div>Gamma: {g}</div> */}
