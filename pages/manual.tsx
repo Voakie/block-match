@@ -1,4 +1,5 @@
 import { ArrowLeftIcon } from "@heroicons/react/20/solid"
+import Link from "next/link"
 import { useRouter } from "next/router"
 
 export default function ManualPage() {
@@ -30,6 +31,8 @@ export default function ManualPage() {
                 If you have trouble getting connected, make sure you are not connected to a VPN and
                 that you have a stable connection. Try using an Android phone if you are having
                 issues on iOS.
+                <br className="mb-5" />
+                If you are having trouble getting to the smartphone view, use <Link href="./controller">this link</Link>
                 <div className="font-bold text-4xl mt-10 mb-4">But why?</div>
                 This small game was created as part of the Mobile Computing and Internet of Things
                 lecture at KIT

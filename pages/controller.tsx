@@ -1,4 +1,5 @@
 import Head from "next/head"
+import Link from "next/link"
 import type { DataConnection } from "peerjs"
 import React, { Component } from "react"
 import Center from "../components/controller/Center"
@@ -114,18 +115,17 @@ export default class Controller extends Component<{}, ControllerState> {
     }
 
     render() {
-        // if (!this.state.deviceSupported)
-        //     return (
-        //         <div className="flex justify-center items-center h-screen flex-col">
-        //             <div className="text-4xl p-10 pb-5 text-center">
-        //                 Your device is not supported because the Gyroscope or Accelerometer is
-        //                 unavailable
-        //             </div>
-        //             <div className="text-2xl">
-        //                 Try to use this device as the <Link href="/game">game</Link> host instead
-        //             </div>
-        //         </div>
-        //     )
+        if (!this.state.deviceSupported)
+            return (
+                <div className="flex justify-center items-center h-screen flex-col">
+                    <div className="text-4xl p-10 pb-5 text-center">
+                        Your device is not supported because the Gyroscope is unavailable
+                    </div>
+                    <div className="text-2xl">
+                        Try to use this device as the <Link href="/game">game</Link> host instead
+                    </div>
+                </div>
+            )
 
         if (!this.state.connect) {
             return (
@@ -144,6 +144,7 @@ export default class Controller extends Component<{}, ControllerState> {
                     >
                         Connect
                     </button>
+                    <div className="mt-10 opacity-70">Are you trying to host a game? <Link href="./game">Click here</Link></div>
                 </Center>
             )
         }

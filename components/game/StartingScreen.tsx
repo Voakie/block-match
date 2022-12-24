@@ -12,10 +12,10 @@ export default function StartingScreen({ host, ownId }: { host?: string; ownId?:
             </div>
 
             <div
-                className="col-start-1 top-0 flex flex-col justify-end items-center z-20"
+                className="col-start-1 top-0 flex flex-col justify-end items-center z-20 m-5"
                 style={{ gridRow: "1" }}
             >
-                <div className="bg-stone-200 text-stone-700 shadow-2xl p-8 rounded-xl text-xl text-center mb-5">
+                <div className="backdrop-blur-md text-stone-800 shadow-2xl p-8 rounded-xl text-xl text-center mb-5">
                     Use your smartphone as a controller
                     <div className="font-bold text-2xl">{host}</div>
                     and enter code
@@ -23,9 +23,9 @@ export default function StartingScreen({ host, ownId }: { host?: string; ownId?:
                 </div>
                 <Link
                     href="./manual"
-                    className="bg-stone-300 text-stone-700 shadow-2xl p-4 rounded-xl text-xl text-center mb-20 flex items-center decoration-transparent"
+                    className="bg-stone-200 text-stone-700 shadow-2xl p-4 rounded-xl text-xl text-center mb-10 flex items-center decoration-transparent z-20"
                 >
-                    <BookOpenIcon className="h-6 mr-2" /> Open user manual
+                    <BookOpenIcon className="h-6 mr-2" /> Manual & Help
                 </Link>
             </div>
         </>
