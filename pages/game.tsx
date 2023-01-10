@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import BlockMatchPuzzle from "../components/BlockMatchPuzzle"
 import { ControllerContext } from "../components/ControllerContext"
 import StartingScreen from "../components/game/StartingScreen"
-import { GameLevel, GameStateContext } from "../components/GameState"
+import { GameStateContext } from "../components/GameState"
 import { levels } from "../models/Levels"
 
 function makeid(length: number) {
