@@ -6,8 +6,10 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import BlockMatchPuzzle from "../components/BlockMatchPuzzle"
 import { ControllerContext } from "../components/ControllerContext"
 import StartingScreen from "../components/game/StartingScreen"
-import { GameStateContext } from "../components/GameState"
+import { GameLevel, GameStateContext } from "../components/GameState"
 import { levels } from "../models/Levels"
+import * as React from "react"
+import Controller from "./controller"
 
 function makeid(length: number) {
     var result = ""
@@ -19,106 +21,123 @@ function makeid(length: number) {
     return result
 }
 
-export default function Game() {
-    const [controllerConnected, setControllerConnected] = useState(false)
-    const [controllerOrientation, setControllerOrientation] = useState([0, 0, 0])
-    const [ownId, setOwnId] = useState<string>()
-    const [host, setHost] = useState<string>()
+interface GameState {
+    controllerConnected: boolean
+    controllerOrientation: [number, number, number],
+    ownId?: string
+    host?: string
+    level: GameLevel
+    levelComplete: boolean
+}
 
-    const [level, setLevel] = useState(levels.getStartingLevel())
-    const [levelComplete, setLevelComplete] = useState(false)
+export default class Game extends React.Component<{}, GameState> {
+    private peer?: Peer
+    private controller?: DataConnection
 
-    const peer = useRef<Peer>()
-    const controller = useRef<DataConnection>()
+    constructor (props: {}) {
+        super(props)
 
-    const setLevelCompleteCallback = useCallback(
-        (v: boolean) => {
-            if (v != levelComplete) {
-                setLevelComplete(v)
-                if (controller.current) {
-                    controller.current.send({ type: "levelStatus", complete: v })
-                }
-            }
-        },
-        [levelComplete]
-    )
+        this.state = {
+            controllerConnected: false,
+            controllerOrientation: [0, 0, 0],
+            ownId: undefined,
+            host: undefined,
+            level: levels.getStartingLevel(),
+            levelComplete: false
+        }
 
-    useEffect(() => {
+        this.setLevelComplete = this.setLevelComplete.bind(this)
+        this.startingScreen = this.startingScreen.bind(this)
+        this.nextLevel = this.nextLevel.bind(this)
+        this.levelSelector = this.levelSelector.bind(this)
+    }
+    
+    componentDidMount(): void {
         const path = location.pathname.split("/")
         path.pop()
-        setHost(location.host + path.join("/"))
-    }, [])
-
-    useEffect(() => {
-        if (!controllerConnected && !peer.current) {
+        this.setState({ host: location.host + path.join("/") })
+    }
+    
+    componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<GameState>): void {
+        if (!this.state.controllerConnected && !this.peer) {
             import("peerjs").then((peerjs) => {
-                if (peer.current) return // This is to prevent race conditions with the dynamic import
-
-                peer.current = new peerjs.Peer(
+                if (this.peer) return // This is to prevent race conditions with the dynamic import
+                
+                this.peer = new peerjs.Peer(
                     makeid(4)
                     // { host: "/", port: 3333, path: "/peerjs/block-match", debug: 10, secure: false }
-                )
-                peer.current.on("open", (id) => {
-                    setOwnId(id)
+                    )
+                    this.peer.on("open", (id) => {
+                        this.setState({ ownId: id })
                 })
 
-                peer.current.on("connection", (conn) => {
+                this.peer.on("connection", (conn) => {
                     console.log("someone connected")
-                    setControllerConnected(true)
-                    controller.current = conn
-
+                    this.setState({ controllerConnected: true })
+                    this.controller = conn
+                    
                     conn.on("data", (data: any) => {
                         if ("type" in data && data.type === "orientation") {
                             if ("data" in data && Array.isArray(data.data)) {
-                                setControllerOrientation(data.data)
+                                this.setState({ controllerOrientation: data.data })
                             }
                         } else if ("type" in data && data.type === "action") {
                             if ("action" in data && data.action === "nextLevel") {
-                                nextLevel()
+                                this.nextLevel()
                             }
                         }
                     })
 
                     conn.on("close", () => {
-                        setControllerConnected(false)
-                        controller.current = undefined
+                        this.setState({ controllerConnected: false })
+                        this.controller = undefined
                     })
-
+                    
                     conn.on("error", (e) => {
                         console.error(e)
-                        setControllerConnected(false)
+                        this.setState({ controllerConnected: false })
                     })
                 })
-
-                peer.current.on("error", (e) => {
-                    setControllerConnected(false)
+                
+                this.peer.on("error", (e) => {
+                    this.setState({ controllerConnected: false })
                     alert(e)
                     console.error(e)
-                    peer.current?.destroy()
-                    peer.current = undefined
+                    this.peer?.destroy()
+                    this.peer = undefined
                 })
             })
-        } else if (level.name === "Start" && controllerConnected && peer.current) {
-            setLevel(levels.getNextLevel(level)!)
+        } else if (this.state.level.name === "Start" && this.state.controllerConnected && this.peer) {
+            this.setState({ level: levels.getNextLevel(this.state.level)! })
         }
-    }, [controllerConnected, level])
+    }
 
-    const startingScreen = useCallback(() => {
-        if (controllerConnected) return <></>
-        return <StartingScreen host={host} ownId={ownId} />
-    }, [host, ownId, controllerConnected])
+    setLevelComplete(v: boolean) {
+    if (v != this.state.levelComplete) {
+            this.setState({ levelComplete: v })
 
-    const nextLevel = useCallback(() => {
-        const nextLevel = levels.getNextLevel(level)
+            if (this.controller) {
+                this.controller.send({ type: "levelStatus", complete: v })
+            }
+        }
+    }
+    
+    startingScreen()  {
+        if (this.state.controllerConnected) return <></>
+        return <StartingScreen host={this.state.host} ownId={this.state.ownId} />
+    }
+
+    nextLevel() {
+        const nextLevel = levels.getNextLevel(this.state.level)
         if (nextLevel) {
-            setLevel(nextLevel)
+            this.setState({ level: nextLevel })
         } else {
             alert("Congratulations! You have completed the game. There are no more levels")
         }
-    }, [level])
+    }
 
-    const levelSelector = useCallback(() => {
-        if (levelComplete && controllerConnected) {
+    levelSelector() {
+        if (this.state.levelComplete && this.state.controllerConnected) {
             return (
                 <>
                     <div
@@ -133,7 +152,7 @@ export default function Game() {
                     >
                         <button
                             className="mb-[80px] p-8 shadow-2xl rounded-2xl text-2xl text-stone-700 bg-stone-300"
-                            onClick={nextLevel}
+                            onClick={this.nextLevel}
                         >
                             Click here to start the next level
                         </button>
@@ -141,37 +160,37 @@ export default function Game() {
                 </>
             )
         } else return <></>
-    }, [levelComplete, level, controllerConnected])
+    }
 
     // const [a, b, g] = controllerOrientation
 
-    return (
-        <div className="h-screen grid grid-cols-1">
+    render () {
+        return <div className="h-screen grid grid-cols-1">
             {/* <div className="fixed">
                 <div>Alpha: {a}</div>
                 <div>Beta: {b}</div>
                 <div>Gamma: {g}</div>
             </div> */}
 
-            {startingScreen()}
-            {levelSelector()}
+            {this.startingScreen()}
+            {this.levelSelector()}
 
             <Head>
                 <title>block-match {"//"} Game</title>
             </Head>
 
             <Canvas className="col-start-1 z-10" style={{ gridRow: "1" }}>
-                <ControllerContext.Provider value={{ orientation: controllerOrientation }}>
-                    <GameStateContext.Provider value={{ level, levelComplete }}>
+                <ControllerContext.Provider value={{ orientation: this.state.controllerOrientation }}>
+                    <GameStateContext.Provider value={{ level: this.state.level, levelComplete: this.state.levelComplete }}>
                         <scene>
                             <ambientLight />
                             <pointLight position={[-8, 0, 0]} />
 
-                            <BlockMatchPuzzle setLevelComplete={setLevelCompleteCallback} />
+                            <BlockMatchPuzzle setLevelComplete={this.setLevelComplete} />
                         </scene>
                     </GameStateContext.Provider>
                 </ControllerContext.Provider>
             </Canvas>
         </div>
-    )
+    }
 }
