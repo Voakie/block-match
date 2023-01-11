@@ -1,34 +1,42 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# block-match
 
-## Getting Started
+**block-match** is a simple single-player browser game that challenges the players rotational skills
+using a gyroscope-enabled mobile device.
 
-First, run the development server:
+## How to play
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+Open the game on your computer and then, on your smartphone, navigate to the URL
+shown at the bottom of the screen. Once there, enter the code that is displayed on
+your computer screen.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Once the game has started, you can rotate the bottom part by simply rotating your
+device (if not, see the Troubleshooting section below). While the first level is
+relatively simple, the levels get more challenging later on.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Development
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Clone the respository and make sure you have Node.js (>= 16.x.x) and yarn installed. Then run
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+    yarn        # Install dependencies
+    yarn dev    # Run webserver
 
-## Learn More
+You can then open `http://localhost:3000/`
 
-To learn more about Next.js, take a look at the following resources:
+For local testing, also run in a seperate terminal:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+    yarn local-ssl-proxy --source=3001 --target=3000
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Make sure to use port `3001` on your mobile device when testing locally. This ensures that you access the site via an encrypted connection. Otherwise, the device orientation functionality might be blocked by your browser.
 
-## Deploy on Vercel
+## Troubleshooting
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+If you have trouble getting connected, make sure you are not connected to a VPN and
+that you have a stable connection. Try using an Android phone if you are having
+issues on iOS.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+If you are having trouble getting to the smartphone view, use change the URL from `.../game` to `.../controller`
+
+## But why?
+
+This small game was created as part of an exercise for the Mobile Computing and Internet of Things
+lecture at KIT

@@ -32,10 +32,11 @@ export default function ManualPage() {
                 that you have a stable connection. Try using an Android phone if you are having
                 issues on iOS.
                 <br className="mb-5" />
-                If you are having trouble getting to the smartphone view, use <Link href="./controller">this link</Link>
+                If you are having trouble getting to the smartphone view, use{" "}
+                <Link href="./controller">this link</Link>
                 <div className="font-bold text-4xl mt-10 mb-4">But why?</div>
-                This small game was created as part of the Mobile Computing and Internet of Things
-                lecture at KIT
+                This small game was created as part of an exercise for the Mobile Computing and
+                Internet of Things lecture at KIT
             </div>
         </div>
     )
