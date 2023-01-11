@@ -3,6 +3,8 @@
 **block-match** is a simple single-player browser game that challenges the players rotational skills
 using a gyroscope-enabled mobile device.
 
+### [Visit the Demo](https://block-match.vercel.app/)
+
 ## How to play
 
 Open the game on your computer and then, on your smartphone, navigate to the URL
